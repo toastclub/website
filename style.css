@@ -25,13 +25,7 @@ div {
 span {
     display: flex;
     gap: 30px;
-    align-items: baseline;
-    width: 100%;
 }
-
-span > p { flex-grow: 1; flex-basis: 0; }
-
-span > p:first-child { text-align: right;}
 
 span > * {
     margin-block: 0;
