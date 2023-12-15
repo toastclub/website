@@ -1,19 +1,45 @@
 body,html {
     padding: 0;
     margin: 0;
-
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 body {
     margin: 0;
     padding: 50px;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+div {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: monospace;
+}
+
+span {
+    display: flex;
+    gap: 30px;
+    align-items: baseline;
+    width: 100%;
+}
+
+span > p { flex-grow: 1; flex-basis: 0; }
+
+span > p:first-child { text-align: right;}
+
+span > * {
+    margin-block: 0;
 }
 
 video {
     width: 100%;
-    height: 100%;
+    flex-grow: 1;
     object-fit: cover;
     mask: url("toastcat.svg");
 }
