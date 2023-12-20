@@ -35,7 +35,25 @@ span {
     margin-block: 0;
 }
 
+@property --x {
+    syntax: '<angle>';
+    /* <- defined as type number for the transition to work */
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@property --y {
+    syntax: '<angle>';
+    /* <- defined as type number for the transition to work */
+    initial-value: 0deg;
+    inherits: false;
+}
+
 div {
+    z-index: 3;
+    transition: --x 0.1s, --y 0.1s;
+    cursor: pointer;
+    transform: rotateX(var(--x)) rotateY(var(--y));
     width: 100%;
     min-height: 0;
     flex-grow: 1;
@@ -44,31 +62,39 @@ div {
     background-image: url("static.gif");
 }
 
-.pulse {
-    animation: pulse 0.3s ease;
-}
-
-h2 {
-    position: absolute;
-    top: 0;
-    right: -40px;
-    transform: rotate(15deg);
-    animation: pulse 3s ease infinite;
-    z-index: 2;
-    font-size: 55px;
-}
-
 @keyframes pulse {
     0% {
-        transform: scale(1);
+        transform: scale(1) rotateX(var(--x)) rotateY(var(--y));
     }
 
     50% {
-        transform: scale(1.1);
+        transform: scale(1.1) rotateX(var(--x)) rotateY(var(--y));
     }
 
     100% {
-        transform: scale(1);
+        transform: scale(1) rotateX(var(--x)) rotateY(var(--y));
+    }
+}
+
+@keyframes rot {
+    0% {
+        rotate: 0deg;
+    }
+
+    25% {
+        rotate: -5deg;
+    }
+
+    50% {
+        rotate: 0deg;
+    }
+
+    75% {
+        rotate: 5deg;
+    }
+
+    100% {
+        rotate: 0deg;
     }
 }
 
