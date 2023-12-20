@@ -1,80 +1,142 @@
-let vid = "APk4mLodk88"
-let streams
-/** @type {HTMLVideoElement} */
-const el = document.getElementById("video");
-const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-if (!mediaQuery.matches) {
-    fetch("https://images" + ~~(Math.random() * 33) + "-focus-opensocial.googleusercontent.com/gadgets/proxy?container=none&url=" + encodeURIComponent("https://www.youtube.com/watch?hl=en&v=" + vid)).then(response => response.text()).then(function (data) {
-        if (data) {
-            streams = parseYoutubeMeta(data);
-            el.src = streams['hls'] || /* streams['720pna'] || streams['480pna'] ||  streams['720p'] ||*/ streams['480p'] || streams['360p'] || streams['240p'];
-            el.play()
-        }
-    });
-}
+class BeatBeat {
 
-function parseYoutubeMeta(rawdata) {
+    isPlaying = false
 
-    const regex = /(?:ytplayer\.config\s*=\s*|ytInitialPlayerResponse\s?=\s?)(.+?)(?:;var|;\(function|\)?;\s*if|;\s*if|;\s*ytplayer\.|;\s*<\/script)/gmsu
+    offlineContext
+    buffer
+    songData = []
 
-    rawdata = rawdata
-        .split('window.getPageData')[0]
-        .replace('ytInitialPlayerResponse = null', '')
-        .replace('ytInitialPlayerResponse=window.ytInitialPlayerResponse', '')
-        .replace('ytplayer.config={args:{raw_player_response:ytInitialPlayerResponse}};', '')
+    constructor(
+        context = new AudioContext(),
+        filterFrequency = 100,
+        peakGain = 15,
+        threshold = 0.8,
+        sampleSkip = 350,
+        minAnimationTime = 0.4
+    ) {
+        this.context = context
+        this.filterFrequency = filterFrequency
+        this.peakGain = peakGain
+        this.threshold = threshold
+        this.sampleSkip = sampleSkip
+        this.minAnimationTime = 0.4
+    }
 
+    load() {
+        return new Promise(async resolve => {
+            const resp = await fetch("aud.wav")
+            const file = await resp.arrayBuffer()
+            this.context.decodeAudioData(file, async (buffer) => {
+                console.log(buffer)
+                this.buffer = buffer
+                await this.analyze()
+                resolve()
+            })
+        })
+    }
 
-    const matches = regex.exec(rawdata);
-    const data = matches && matches.length > 1 ? JSON.parse(matches[1]) : false;
+    play(cb) {
+        const source = this.context.createBufferSource()
+        source.buffer = this.buffer
+        source.connect(this.context.destination)
+        source.start()
+        this.animate(cb)
+    }
 
-    var streams = [],
-        result = {};
+    async analyze() {
+        this.offlineContext = new OfflineAudioContext(1, this.buffer.length, this.buffer.sampleRate)
+        const source = this.offlineContext.createBufferSource()
+        source.buffer = this.buffer
 
-    if (data.streamingData) {
+        const filter = this.offlineContext.createBiquadFilter()
+        filter.type = "bandpass"
+        filter.frequency.value = this.filterFrequency
+        filter.Q.value = 1
 
-        if (data.streamingData.adaptiveFormats) {
-            streams = streams.concat(data.streamingData.adaptiveFormats);
-        }
+        const filter2 = this.offlineContext.createBiquadFilter()
+        filter2.type = "peaking"
+        filter2.frequency.value = this.filterFrequency
+        filter2.Q.value = 1
+        filter2.gain.value = this.peakGain
 
-        if (data.streamingData.formats) {
-            streams = streams.concat(data.streamingData.formats);
-        }
+        source.connect(filter2)
+        filter2.connect(filter)
+        filter.connect(this.offlineContext.destination)
+        source.start()
+        const buffer = await this.offlineContext.startRendering()
 
-        if (data.streamingData.hlsManifestUrl) {
-            result.hls = data.streamingData.hlsManifestUrl;
+        const data = buffer.getChannelData(0)
+
+        this.songData = []
+        for (let i = 0; i < data.length; ++i) {
+            if (data[i] > this.threshold) {
+                const time = i / buffer.sampleRate
+                const previousTime = this.songData.length
+                    ? this.songData[this.songData.length - 1].time
+                    : 0
+                if (time - previousTime > this.minAnimationTime) {
+                    this.songData.push({
+                        data: data[i],
+                        time
+                    })
+                }
+            }
+            i += this.sampleSkip
         }
     }
 
-    streams.forEach(function (stream, n) {
-        const itag = stream.itag * 1,
-            quality = false,
-            itag_map = {
-                18: '360p',
-                22: '720p',
-                37: '1080p',
-                38: '3072p',
-                82: '360p3d',
-                83: '480p3d',
-                84: '720p3d',
-                85: '1080p3d',
-                133: '240pna',
-                134: '360pna',
-                135: '480pna',
-                136: '720pna',
-                137: '1080pna',
-                264: '1440pna',
-                298: '720p60',
-                299: '1080p60na',
-                160: '144pna',
-                139: "48kbps",
-                140: "128kbps",
-                141: "256kbps"
-            };
-        if (itag_map[itag]) result[itag_map[itag]] = stream.url;
-    });
+    animate(cb) {
+        this.songData.forEach((d, i) => {
+            const time = i === this.songData.length - 1
+                ? d.time
+                : this.songData[i + 1].time - d.time
+            setTimeout(() => cb(time), d.time * 1000)
+        })
+    }
+}
 
-    return result;
-};
+/** @type {HTMLVideoElement} */
+const el = document.getElementById("video");
+const div = document.querySelector("div");
+let source = el.querySelector("source")
+const flicks = ["maw.webm", "OIIAOIIA.webm", "PHONK2.webm", "skate.mp4", "yum.webm"]
+
+const randomFlick = () => {
+    let currentFlick = (source.src ?? "").replace("flicks/", "")
+    while (true) {
+        let flick = flicks[Math.floor(Math.random() * flicks.length)]
+        if (flick != currentFlick) return flick
+    }
+}
+
+
+let first = true
+const funni = async () => {
+    el.style.display = "none"
+    source.src = "flicks/" + randomFlick()
+    el.load()
+    setTimeout(() => {
+        el.style.display = "initial"
+        el.play()
+    }, 1000)
+    if (first != true) {
+        const sound = new BeatBeat()
+        await sound.load()
+        sound.play(() => {
+            console.log("call")
+            div.classList.add("pulse")
+            console.log("wow")
+            setTimeout(() => {
+                div.classList.remove("pulse")
+            }, 0.3)
+        })
+    }
+    first = false
+}
+
+funni()
+
+el.addEventListener("ended", funni)
 
 const multiple = 10;
 let isIn = false
@@ -84,16 +146,16 @@ function transformElement(x, y) {
         return
     }
     let box = el.getBoundingClientRect();
-    let calcX = -((y/window.innerHeight-0.5))*multiple;
-    let calcY = ((x/window.innerWidth)-0.5)*multiple;
+    let calcX = -((y / window.innerHeight - 0.5)) * multiple;
+    let calcY = ((x / window.innerWidth) - 0.5) * multiple;
 
-    el.style.transform  = "rotateX("+ calcX +"deg) "
-                          + "rotateY("+ calcY +"deg)";
-  }
+    div.style.transform = "rotateX(" + calcX + "deg) "
+        + "rotateY(" + calcY + "deg)";
+}
 
 addEventListener("mousemove", (e) => {
     let xy = [e.clientX, e.clientY];
-    el.style.transform = transformElement(e.clientX, e.clientY)
+    div.style.transform = transformElement(e.clientX, e.clientY)
 });
 
 document.addEventListener("mouseenter", (e) => {
@@ -103,5 +165,12 @@ document.addEventListener("mouseenter", (e) => {
 document.addEventListener("mouseleave", (e) => {
     console.log("oo")
     isIn = false
-    el.style.transform  = "rotateX(0deg) rotateY(0deg)";
+    div.style.transform = "rotateX(0deg) rotateY(0deg)";
+})
+
+div.addEventListener("click", () => {
+    if (el.muted == false) {
+        funni()
+    }
+    el.muted = false
 })
