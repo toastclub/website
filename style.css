@@ -51,7 +51,7 @@ span {
 
 div {
     z-index: 3;
-    transition: --x 0.1s, --y 0.1s;
+    transition: transform 0.1s;
     cursor: pointer;
     transform: rotateX(var(--x)) rotateY(var(--y));
     width: 100%;

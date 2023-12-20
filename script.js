@@ -6,13 +6,12 @@ let flicks = [["maw.webm"], ["OIIAOIIA.webm", 160, 6.65], ["PHONK2.webm", 130, 2
 
 let burntFlicks = []
 
-let flick;
+let flick, tm;
 const randomFlick = () => {
     while (true) {
-        console.log(burntFlicks)
         let flick = flicks[Math.floor(Math.random() * flicks.length)]
         if (burntFlicks.length == flicks.length) {
-            burntFlicks = []
+            burntFlicks = [burntFlicks.pop()]
         }
         if (!burntFlicks.includes(flick[0])) {
             burntFlicks.push(flick[0])
@@ -33,7 +32,8 @@ const funni = async () => {
             el.style.display = "initial"
             el.play()
             if (flick[1] != undefined) {
-                setTimeout(() => {
+                clearTimeout(tm)
+                tm = setTimeout(() => {
                     div.style.animation = `pulse ${60 / flick[1]}s linear infinite, rot ${60 / flick[1] * 2}s linear infinite`
                 }, 1000 * flick[2]);
             } else {
