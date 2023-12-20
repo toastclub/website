@@ -49,6 +49,7 @@ const funni = async () => {
         el.style.display = "none"
         flick = randomFlick()
         source.src = "flicks/" + flick[0]
+        source.type = "video/" + flick[0].split('.')[1]
         el.pause()
         el.load()
         div.style.animation = undefined
