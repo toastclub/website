@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Toastcat</title>
+    <meta
+      name="description"
+      content="toast cat toast cat toast cat toast cat toast cat"
+    />
+    <link rel="shortcut icon" type="image/jpg" href="" />
+    <script src="/script.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Germania+One&family=Spectral&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <aside></aside>
+    <main>
+      <h1>Toastcat</h1>
+      <h2>Limited Liability Company</h2>
+    </main>
+    <style>
+      aside > * {
+        position: fixed;
+      }
+
+      aside {
+        max-width: 0;
+        height: 0;
+      }
+
+      html {
+        height: 100%;
+      }
+
+      body {
+        justify-content: center;
+        align-items: center;
+      }
+
+      h1,
+      h2 {
+        margin-block: 0;
+      }
+
+      main {
+        padding: 20px 0;
+      }
+    </style>
+    <script defer>
+      // https://www.desmos.com/calculator/2c7y4wlcpw
+      // https://colab.research.google.com/drive/1kPcORA7FRurWAaLzW0V_x5MKhPOGyKJQ#scrollTo=EzycJLKrZ5hM
+      addEventListener("load", () => {
+        let arr = [
+          0, 0.50490728, 1.13414182, 2.00745084, 2.63668538, 3.14159265,
+          3.64649993, 4.27573447, 5.14904349, 5.77827803,
+        ];
+        let main = document.querySelector("main");
+        console.log(main);
+
+        if (main) {
+          console.log("a");
+          let a = main.clientWidth / Math.sqrt(2);
+          let b = main.clientHeight / Math.sqrt(2);
+
+          let imgs = document.querySelectorAll("img");
+
+          console.log(imgs);
+
+          imgs.forEach((img, i) => {
+            console.log(img);
+            img.style.setProperty(
+              "left",
+              a * Math.sin(arr[i]) +
+                main.getBoundingClientRect().left +
+                main.offsetWidth / 2 -
+                img.offsetWidth / 2 +
+                "px"
+            );
+            img.style.setProperty(
+              "top",
+              b * Math.cos(arr[i]) +
+                main.getBoundingClientRect().top +
+                main.offsetHeight / 2 -
+                img.offsetHeight / 2 +
+                15 +
+                "px"
+            );
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -12,7 +12,7 @@ let images = Array.from({ length: 10 }, (_, i) => i + 1)
     } else {
       img.classList.add("otherOtherShadow");
     }
-    asides[i % 2 == 0 ? 0 : 1].appendChild(img);
+    asides[i % asides.length].appendChild(img);
     return img;
   });
 images = asides.flatMap((aside) => [...aside.querySelectorAll("img")]);
