@@ -141,6 +141,12 @@ img {
   }
 }
 
+@media screen and (max-width: 750px) {
+  aside {
+    display: none;
+  }
+}
+
 a {
   color: gold;
   text-decoration: none;
