@@ -1,114 +1,116 @@
-/** @type {HTMLVideoElement} */
-const el = document.getElementById("video");
-const div = document.querySelector("div");
-let source = el.querySelector("source")
-let flicks = [["maw.webm"], ["OIIAOIIA.webm", 160, 6.65], ["PHONK2.webm", 130, 2.1], ["goof.webm", 1000, 2], ["skate.mp4", 150, 6.5], ["yum.webm"], ["mwaa.webm", 5, 5.8]]
-
-const audioContext = new AudioContext()
-const bufferSize = 4096;
-const pinkNoise = (function () {
-    var b0, b1, b2, b3, b4, b5, b6;
-    b0 = b1 = b2 = b3 = b4 = b5 = b6 = 0.0;
-    var node = audioContext.createScriptProcessor(bufferSize, 1, 1);
-    node.onaudioprocess = function (e) {
-        var output = e.outputBuffer.getChannelData(0);
-        for (var i = 0; i < bufferSize; i++) {
-            var white = Math.random() * 2 - 1;
-            b0 = 0.99886 * b0 + white * 0.0555179;
-            b1 = 0.99332 * b1 + white * 0.0750759;
-            b2 = 0.96900 * b2 + white * 0.1538520;
-            b3 = 0.86650 * b3 + white * 0.3104856;
-            b4 = 0.55000 * b4 + white * 0.5329522;
-            b5 = -0.7616 * b5 - white * 0.0168980;
-            output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
-            output[i] *= 0.11; // (roughly) compensate for gain
-            b6 = white * 0.115926;
-        }
+let asides = [...document.querySelectorAll("aside")];
+let withShadow = [2, 6, 8, 9, 11];
+let images = Array.from({ length: 10 }, (_, i) => i + 1)
+  .map((value) => ({ value, sort: Math.random() }))
+  .sort((a, b) => a.sort - b.sort)
+  .map(({ value }) => value)
+  .map((image, i) => {
+    const img = document.createElement("img");
+    img.src = `/dog/Image ${image + 1}.webp`;
+    if (!withShadow.includes(image + 1)) {
+      img.classList.add("shadow");
+    } else {
+      img.classList.add("otherOtherShadow");
     }
-    return node;
-})();
+    asides[i % 2 == 0 ? 0 : 1].appendChild(img);
+    return img;
+  });
+images = asides.flatMap((aside) => [...aside.querySelectorAll("img")]);
 
-let burntFlicks = []
+let n = 0;
+setInterval(() => {
+  n++;
+  images.forEach(
+    (img, i) =>
+      (img.style.transform = `rotate(${(i - n) % 2 == 0 ? -10 : 10}deg)`)
+  );
+}, 500);
 
-let flick, tm;
-const randomFlick = () => {
-    while (true) {
-        let flick = flicks[Math.floor(Math.random() * flicks.length)]
-        if (burntFlicks.length == flicks.length) {
-            burntFlicks = [burntFlicks.pop()]
-        }
-        if (!burntFlicks.includes(flick[0])) {
-            burntFlicks.push(flick[0])
-            return flick
-        }
-    }
+let catEmojis = "🐱,😹,😻,😽,😸,😺".split(",");
+let catEls = document.querySelectorAll(".cat");
+let emoji = catEmojis[Math.floor(Math.random() * catEmojis.length)];
+catEls.forEach((el) => (el.textContent = emoji));
+
+let particles = [];
+
+function randompowerlaw(mini, maxi) {
+  return Math.ceil(
+    Math.exp(Math.random() * (Math.log(maxi) - Math.log(mini))) * mini
+  );
 }
 
-const funni = async () => {
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        el.style.display = "none"
-        flick = randomFlick()
-        source.src = "flicks/" + flick[0]
-        source.type = "video/" + flick[0].split('.')[1]
-        el.pause()
-        el.load()
-        div.style.animation = undefined
-        pinkNoise.connect(audioContext.destination)
-        setTimeout(() => {
-            pinkNoise.disconnect()
-            el.style.display = "initial"
-            el.play()
-            if (flick[1] != undefined) {
-                clearTimeout(tm)
-                tm = setTimeout(() => {
-                    div.style.animation = `pulse ${60 / flick[1]}s linear infinite, rot ${60 / flick[1] * 2}s linear infinite`
-                }, 1000 * flick[2]);
-            } else {
-                div.style.animation = undefined
-            }
-        }, 1000)
+const enterprise = document.querySelector("h1");
+const eW = enterprise.offsetWidth;
+const eH = enterprise.offsetHeight;
+
+let timeTilNextSpawn = Math.random() * 4;
+let step = -1;
+
+let stars = "✦".split("");
+let colors = [
+  "ffe34d",
+  "ffe766",
+  "FFD700",
+  "FFD700",
+  "ffeb80",
+  "ffef99",
+  "ffef99",
+];
+
+function frame() {
+  step++;
+  if (step > timeTilNextSpawn) {
+    step = -1;
+    timeTilNextSpawn = Math.random() * 20 + 2;
+    const star = document.createElement("span");
+    star.className = "particle";
+    star.style.setProperty(
+      "color",
+      colors[Math.floor(Math.random() * colors.length)]
+    );
+    star.innerText = stars[Math.floor(Math.random() * stars.length)];
+    star.style.setProperty("--x", Math.round(Math.random() * eW) + "px");
+    star.style.setProperty("--y", Math.round(Math.random() * eH - 10) + "px");
+    let lifetime = Math.random() * 180 + 120;
+    star.style.setProperty("--lifetime", lifetime * 15 + "ms");
+    star.style.setProperty("--max-size", randompowerlaw(1, 1.3) - 0.4);
+    enterprise.appendChild(star);
+    particles.push({
+      lifetime,
+      currentLife: 0,
+      boundElement: star,
+    });
+  }
+  particles = particles.flatMap((particle) => {
+    if (particle.currentLife > particle.lifetime) {
+      particle.boundElement.remove();
+      return [];
     }
+    particle.currentLife = particle.currentLife + 1;
+    return [particle];
+  });
+  window.requestAnimationFrame(frame);
 }
 
-funni()
+window.requestAnimationFrame(frame);
 
-el.addEventListener("ended", funni)
-
-const multiple = 10;
-let isIn = false
-
-function transformElement(x, y) {
-    if (!isIn) {
-        return
+document.querySelectorAll("a").forEach((a) => {
+  a.addEventListener("click", (event) => {
+    if (a.hasAttribute("new-color")) {
+      event.preventDefault();
+    } else {
+      return true;
     }
-    let box = el.getBoundingClientRect();
-    let calcX = -((y / window.innerHeight - 0.5)) * multiple;
-    let calcY = ((x / window.innerWidth) - 0.5) * multiple;
-
-    div.style.setProperty("--x", (calcX * 2) + "deg");
-    div.style.setProperty("--y", (calcY * 2) + "deg");
-}
-
-addEventListener("mousemove", (e) => {
-    let xy = [e.clientX, e.clientY];
-    div.style.transform = transformElement(e.clientX, e.clientY)
+    document.body.style.setProperty("--destColor", a.getAttribute("new-color"));
+    document.body.classList.add("isNavigating");
+    setTimeout(() => {
+      window.location = a.href;
+    }, 300);
+  });
 });
 
-document.addEventListener("mouseenter", (e) => {
-    isIn = true
-})
-
-document.addEventListener("mouseleave", (e) => {
-    //div.style.setProperty("--x", "0deg");
-    //div.style.setProperty("--y", "0deg");
-    isIn = false
-})
-
-div.addEventListener("click", () => {
-    div.style.cursor = 'alias'
-    audioContext.resume()
-    if (el.muted == false) {
-        funni()
-    }
-    el.muted = false
-})
+addEventListener("pageshow", (event) => {
+  if (event.persisted) {
+    document.body.classList.remove("isNavigating");
+  }
+});
