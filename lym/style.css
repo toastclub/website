@@ -26,6 +26,10 @@ section {
     rgba(27, 82, 136, 1) 100%
   );
   border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 
 @keyframes heart-in {
@@ -86,10 +90,33 @@ h2 {
 
 @media screen and (max-width: 850px) {
   body {
-    grid-auto-rows: 500px;
+    grid-auto-rows: 430px;
   }
 
-  img {
+  a {
     position: relative;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
   }
+}
+
+.rate-device-container {
+  display: flex;
+  transform: scale(0.6) translate(0, -275px);
+  gap: 100px;
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+.rate-device-container > .device-container {
+  transform: rotate(10deg);
+  transform-origin: top left;
+  z-index: 0;
+}
+
+.rate-device-container > .device-container:nth-of-type(1) {
+  transform: rotate(-10deg);
 }
