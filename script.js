@@ -1,36 +1,37 @@
 let asides = [...document.querySelectorAll("aside")];
-let withShadow = [2, 6, 8, 9, 11];
-let images = Array.from({ length: 10 }, (_, i) => i + 1)
-  .map((value) => ({ value, sort: Math.random() }))
-  .sort((a, b) => a.sort - b.sort)
-  .map(({ value }) => value)
-  .map((image, i) => {
-    const img = document.createElement("img");
-    img.src = `/dog/Image ${image + 1}.webp`;
-    if (!withShadow.includes(image + 1)) {
-      img.classList.add("shadow");
-    } else {
-      img.classList.add("otherOtherShadow");
-    }
-    asides[i % asides.length].appendChild(img);
-    return img;
-  });
-images = asides.flatMap((aside) => [...aside.querySelectorAll("img")]);
+if (asides.length > 0) {
+  let withShadow = [2, 6, 8, 9, 11];
+  let images = Array.from({ length: 10 }, (_, i) => i + 1)
+    .map((value) => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value)
+    .map((image, i) => {
+      const img = document.createElement("img");
+      img.src = `/dog/Image ${image + 1}.webp`;
+      if (!withShadow.includes(image + 1)) {
+        img.classList.add("shadow");
+      } else {
+        img.classList.add("otherOtherShadow");
+      }
+      asides[i % asides.length].appendChild(img);
+      return img;
+    });
+  images = asides.flatMap((aside) => [...aside.querySelectorAll("img")]);
 
-let n = 0;
-setInterval(() => {
-  n++;
-  images.forEach(
-    (img, i) =>
-      (img.style.transform = `rotate(${(i - n) % 2 == 0 ? -10 : 10}deg)`)
-  );
-}, 500);
+  let n = 0;
+  setInterval(() => {
+    n++;
+    images.forEach(
+      (img, i) =>
+        (img.style.transform = `rotate(${(i - n) % 2 == 0 ? -10 : 10}deg)`)
+    );
+  }, 500);
+}
 
 let catEmojis = "🐱,😹,😻,😽,😸,😺".split(",");
 let catEls = document.querySelectorAll(".cat");
 let emoji = catEmojis[Math.floor(Math.random() * catEmojis.length)];
 catEls.forEach((el) => (el.textContent = emoji));
-
 let particles = [];
 
 function randompowerlaw(mini, maxi) {
