@@ -58,6 +58,16 @@ footer {
   font-size: 100px;
 }
 
+sub {
+  font-size: 14px;
+  color: #c4f1ec;
+}
+
+sub > a {
+  color: #c4f1ec;
+  text-decoration: underline;
+}
+
 footer > span {
   margin-bottom: -40px;
 }
