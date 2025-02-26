@@ -1,0 +1,40 @@
+{
+  "name": "iap.js",
+  "type": "module",
+  "version": "0.0.1",
+  "license": "BSD-3-Clause",
+  "author": {
+    "name": "Toastcat LLC"
+  },
+  "description": "iap.js is a library for parsing and verifying In-App Purchase receipts.",
+  "keywords": [
+    "storekit",
+    "storekit2",
+    "in-app-purchase",
+    "iap",
+    "receipt"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/toastclub/iap"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "oxc-transform": "^0.52.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "asn1js": "^3.0.5",
+    "pkijs": "^3.2.4"
+  },
+  "trustedDependencies": [
+    "oxc-transform"
+  ],
+  "files": [
+    "build",
+    "LICENSE",
+    "README.md"
+  ]
+}
